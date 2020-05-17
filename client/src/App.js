@@ -4,13 +4,13 @@ import './App.css';
 class App extends Component {
 
   state = {
-    data: 'Test'
+    customers: []
   }
 
   componentDidMount(){
     fetch('/customers/').then(res => res.json())
-    .then((results) => {
-      console.log(results)
+    .then((customers) => {
+      this.setState({customers})
     })
 
   }
@@ -19,7 +19,16 @@ class App extends Component {
     return(
       <div className ="App">
         <h1>Customers</h1>
-        <h2>{this.state.data}</h2>
+        <ul>
+          {this.state.customers.map((customer, i) => {
+            return (
+             customer.address && 
+             <li>
+               <h2>{customer.address.address_line_1}</h2>
+             </li>
+            )
+          })}
+        </ul>
       </div>
     )
   }

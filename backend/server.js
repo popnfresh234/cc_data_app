@@ -12,8 +12,7 @@ app.get('/', (req, res) => {
   res.send('hello world');
 });
 
-const getCustomers = (cursor) => {
-  console.log(cursor);
+const getCustomers = (cursor, customers, res) => {
   let url = 'https://connect.squareup.com/v2/customers';
   if (cursor) {
     url = `${url}?cursor=${cursor}`;
@@ -29,9 +28,10 @@ const getCustomers = (cursor) => {
     .then(response => response.json())
     .then((jsonResult) => {
       if (jsonResult.cursor) {
-        getCustomers(jsonResult.cursor);
+        return getCustomers(jsonResult.cursor, customers.concat(jsonResult.customers), res);
       }
-      return jsonResult.customers;
+      console.log(`found ${customers.length} customers`);
+      return res.json(customers);
     })
     .catch((err) => {
       console.log(err);
@@ -40,7 +40,7 @@ const getCustomers = (cursor) => {
 
 app.get('/customers/', (req, res) => {
   console.log('Endpoint: customers');
-  console.log(getCustomers(req.cursor));
+  getCustomers(req.cursor, [], res);
 });
 
 app.listen(port, () => {
